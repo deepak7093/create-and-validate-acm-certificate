@@ -74,7 +74,9 @@ class DNSValidatedACMCertClient():
                 portion of a host
             """
             domain_tld_info = tldextract.extract(validation_dns_record)
-            return "%s.%s" % (domain_tld_info.domain, domain_tld_info.suffix)
+            print(domain_tld_info)
+            print((domain_tld_info.subdomain).split('.')[-1])
+            return "%s.%s.%s" % ((domain_tld_info.subdomain).split('.')[-1], domain_tld_info.domain, domain_tld_info.suffix)
 
         def domain_matches_hosted_zone(domain, zone):
             return zone.get('Name') == "%s." % (domain)
@@ -83,11 +85,13 @@ class DNSValidatedACMCertClient():
             return zone_id_string.split('/')[-1]
 
         hosted_zone_domain = get_domain_from_host(validation_dns_record)
+        print(hosted_zone_domain)
 
         target_record = list(
             filter(
                 lambda zone: domain_matches_hosted_zone(hosted_zone_domain, zone),
                 self.route53_zones.get('HostedZones')))
+        print(target_record)
 
         return get_zone_id_from_id_string(target_record[0].get('Id'))
 
